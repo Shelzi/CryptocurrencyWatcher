@@ -26,6 +26,8 @@ public class CryptocurrencyDaoImpl implements CryptocurrencyDao {
     }
 
     public Cryptocurrency read(int id){
-        return null;
+        String SQL = "SELECT * FROM cryptocurrency WHERE id = ?";
+        Cryptocurrency cryptocurrencies = jdbcTemplate.queryForObject(SQL, new CryptocurrencyMapper(), id);
+        return cryptocurrencies;
     }
 }

@@ -1,5 +1,9 @@
 package com.shelzi.cryptocurrencywatcher.config;
 
+import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
+import com.shelzi.cryptocurrencywatcher.model.service.CryptocurrencyService;
+import com.shelzi.cryptocurrencywatcher.util.CryptocurrencyChecker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -9,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;

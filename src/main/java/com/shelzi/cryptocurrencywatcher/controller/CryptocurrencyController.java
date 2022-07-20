@@ -1,5 +1,7 @@
 package com.shelzi.cryptocurrencywatcher.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
 import com.shelzi.cryptocurrencywatcher.entity.User;
@@ -28,38 +30,32 @@ public class CryptocurrencyController {
         this.cryptocurrencyService = cryptocurrencyService;
     }
 
-    @PostMapping(value = "/сreate")
+    @PostMapping(value = "/create")
     public ResponseEntity<?> create(@RequestBody User user, Cryptocurrency cryptocurrency) {
         cryptocurrencyService.create(user, cryptocurrency);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/cryptocurrency")
-    public ResponseEntity<List<Cryptocurrency>> read() {
+    public ResponseEntity<List<Cryptocurrency>> read() throws JsonProcessingException {
         final List<Cryptocurrency> cryptocurrencyList = cryptocurrencyService.readAllAvailableCryptocurrencies();
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Cryptocurrency[]> c = restTemplate.getForEntity("https://api.coinlore.net/api/tickers/", Cryptocurrency[].class);
-        List<Cryptocurrency> cryptocurrencies = Arrays.asList(c.getBody());
-
-        return cryptocurrencies != null && !cryptocurrencies.isEmpty()
-                ? new ResponseEntity<>(cryptocurrencies, HttpStatus.OK)
+        String jsonStringArray = restTemplate.getForObject("https://api.coinlore.net/api/tickers/", String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String s = jsonStringArray.substring(jsonStringArray.indexOf("["), jsonStringArray.indexOf("]") + 1);
+        List<Cryptocurrency> studentList = mapper.readValue(s, new TypeReference<ArrayList<Cryptocurrency>>() {
+        });
+        return !studentList.isEmpty()
+                ? new ResponseEntity<>(studentList, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value = "/cryptocurrency/{id}")
-    public ResponseEntity<Cryptocurrency> read(@PathVariable(name = "id") int id) throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
+    public ResponseEntity<Cryptocurrency> read(@PathVariable(name = "id") int id) throws JsonProcessingException {
         final Cryptocurrency cryptocurrency = cryptocurrencyService.read(id);
-        ResponseEntity<String> s = restTemplate.getForEntity("https://api.coinlore.net/api/ticker/?id=" + id, String.class);
-        ObjectMapper mapper = new ObjectMapper();
-        String s1 = s.getBody().replaceAll("[\\[\\]]", "");
-        Cryptocurrency cryptocurrency1 = mapper.readValue(s1, Cryptocurrency.class);
-
-        return restTemplate.exchange("https://api.coinlore.net/api/ticker/?id=" + id, HttpMethod.GET, null, Cryptocurrency.class);
-
-        /*return cryptocurrency != null
+        return cryptocurrency != null
                 ? new ResponseEntity<>(cryptocurrency, HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_FOUND);*/
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping(value = "/user/{id}")
