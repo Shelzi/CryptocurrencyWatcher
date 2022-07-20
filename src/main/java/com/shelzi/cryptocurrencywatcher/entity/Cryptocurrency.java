@@ -1,13 +1,19 @@
 package com.shelzi.cryptocurrencywatcher.entity;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Cryptocurrency {
+    @JsonAlias("id")
     private long id;
+    @JsonAlias("symbol")
     private String symbol;
-    private long priceUsd;
+    @JsonAlias("price_usd")
+    private double priceUsd;
+    // TODO: 20.07.2022 вернуть long
 
     public Cryptocurrency() {
     }
@@ -18,7 +24,7 @@ public class Cryptocurrency {
     }
 
     @JsonCreator
-    public Cryptocurrency(long id, String symbol, long priceUsd) {
+    public Cryptocurrency(@JsonProperty("id") long id, @JsonProperty("symbol") String symbol, @JsonProperty("price_usd") double priceUsd) {
         this.id = id;
         this.symbol = symbol;
         this.priceUsd = priceUsd;
@@ -32,7 +38,7 @@ public class Cryptocurrency {
         this.id = id;
     }
 
-    public long getPriceUsd() {
+    public double getPriceUsd() {
         return priceUsd;
     }
 

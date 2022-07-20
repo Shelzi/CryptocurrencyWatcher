@@ -1,4 +1,4 @@
-package com.shelzi.cryptocurrencywatcher.dao;
+package com.shelzi.cryptocurrencywatcher.model.dao;
 
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
 

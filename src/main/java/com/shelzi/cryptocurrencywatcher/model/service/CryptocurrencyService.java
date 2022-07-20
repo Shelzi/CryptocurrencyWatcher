@@ -1,4 +1,4 @@
-package com.shelzi.cryptocurrencywatcher.service;
+package com.shelzi.cryptocurrencywatcher.model.service;
 
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
 import com.shelzi.cryptocurrencywatcher.entity.User;

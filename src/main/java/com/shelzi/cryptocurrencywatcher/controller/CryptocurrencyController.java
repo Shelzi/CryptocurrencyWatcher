@@ -1,14 +1,22 @@
 package com.shelzi.cryptocurrencywatcher.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
 import com.shelzi.cryptocurrencywatcher.entity.User;
-import com.shelzi.cryptocurrencywatcher.service.CryptocurrencyService;
+import com.shelzi.cryptocurrencywatcher.model.service.CryptocurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.DataInput;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -30,20 +38,24 @@ public class CryptocurrencyController {
     public ResponseEntity<List<Cryptocurrency>> read() {
         final List<Cryptocurrency> cryptocurrencyList = cryptocurrencyService.readAllAvailableCryptocurrencies();
         RestTemplate restTemplate = new RestTemplate();
-        Cryptocurrency cryptocurrency = restTemplate.getForObject("https://api.coinlore.net/api/ticker/?id=90", Cryptocurrency.class);
-        return cryptocurrencyList != null && !cryptocurrencyList.isEmpty()
-                ? new ResponseEntity<>(cryptocurrencyList, HttpStatus.OK)
+        ResponseEntity<Cryptocurrency[]> c = restTemplate.getForEntity("https://api.coinlore.net/api/tickers/", Cryptocurrency[].class);
+        List<Cryptocurrency> cryptocurrencies = Arrays.asList(c.getBody());
+
+        return cryptocurrencies != null && !cryptocurrencies.isEmpty()
+                ? new ResponseEntity<>(cryptocurrencies, HttpStatus.OK)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value = "/cryptocurrency/{id}")
-    public ResponseEntity<Cryptocurrency> read(@PathVariable(name = "id") int id) {
-        final Cryptocurrency cryptocurrency = cryptocurrencyService.read(id);
+    public ResponseEntity<Cryptocurrency> read(@PathVariable(name = "id") int id) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<Cryptocurrency> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange("https://api.coinlore.net/api/ticker/?id=" + id, HttpMethod.GET, entity, Cryptocurrency.class);
+        final Cryptocurrency cryptocurrency = cryptocurrencyService.read(id);
+        ResponseEntity<String> s = restTemplate.getForEntity("https://api.coinlore.net/api/ticker/?id=" + id, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        String s1 = s.getBody().replaceAll("[\\[\\]]", "");
+        Cryptocurrency cryptocurrency1 = mapper.readValue(s1, Cryptocurrency.class);
+
+        return restTemplate.exchange("https://api.coinlore.net/api/ticker/?id=" + id, HttpMethod.GET, null, Cryptocurrency.class);
 
         /*return cryptocurrency != null
                 ? new ResponseEntity<>(cryptocurrency, HttpStatus.OK)

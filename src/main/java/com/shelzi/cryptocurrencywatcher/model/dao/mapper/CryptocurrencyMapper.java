@@ -1,4 +1,4 @@
-package com.shelzi.cryptocurrencywatcher.dao.mapper;
+package com.shelzi.cryptocurrencywatcher.model.dao.mapper;
 
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
 import org.springframework.dao.DataAccessException;

@@ -1,13 +1,12 @@
-package com.shelzi.cryptocurrencywatcher.dao.impl;
+package com.shelzi.cryptocurrencywatcher.model.dao.impl;
 
-import com.shelzi.cryptocurrencywatcher.dao.CryptocurrencyDao;
-import com.shelzi.cryptocurrencywatcher.dao.mapper.CryptocurrencyMapper;
+import com.shelzi.cryptocurrencywatcher.model.dao.CryptocurrencyDao;
+import com.shelzi.cryptocurrencywatcher.model.dao.mapper.CryptocurrencyMapper;
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 @Component
