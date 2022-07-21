@@ -7,13 +7,15 @@ import com.shelzi.cryptocurrencywatcher.entity.User;
 import java.util.List;
 
 public interface CryptocurrencyService {
-    boolean create(User user, Cryptocurrency cryptocurrency);
+    boolean create(User user);
 
-    Cryptocurrency read(int id) throws JsonProcessingException;
+    Cryptocurrency read(long id) throws JsonProcessingException;
 
-    boolean update(User user, Cryptocurrency cryptoCurrency);
+    boolean update(Cryptocurrency cryptoCurrency);
 
-    boolean delete(int id);
+    boolean delete(long id);
 
     List<Cryptocurrency> readAllAvailableCryptocurrencies();
+
+    Cryptocurrency readNewPriceFromApi(long id) throws JsonProcessingException;
 }

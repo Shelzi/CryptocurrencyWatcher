@@ -8,7 +8,6 @@ public class Cryptocurrency {
     private long id;
     @JsonProperty("symbol")
     private String symbol;
-    @JsonProperty("price_usd")
     private long priceUsd;
 
     public Cryptocurrency() {

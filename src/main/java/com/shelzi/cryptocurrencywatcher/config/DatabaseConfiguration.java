@@ -1,9 +1,5 @@
 package com.shelzi.cryptocurrencywatcher.config;
 
-import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
-import com.shelzi.cryptocurrencywatcher.model.service.CryptocurrencyService;
-import com.shelzi.cryptocurrencywatcher.util.CryptocurrencyChecker;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -13,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +23,9 @@ public class DatabaseConfiguration {
     private static final String DATABASE_URL = "spring.datasource.url";
     private static final String DATABASE_USERNAME = "spring.datasource.username";
     private static final String DATABASE_PASSWORD = "spring.datasource.password";
+/*    private static final String API_URL_PROPERTY_FILE_PATH = "/apiUrl.properties";
+    private static final String API_URL = "url.cryptocurrency-by-id";*/
+
 
     @Bean
     public DataSource dataSource() throws IOException {
@@ -38,6 +36,8 @@ public class DatabaseConfiguration {
         dataSource.setUrl(properties.getProperty(DATABASE_URL));
         dataSource.setUsername(properties.getProperty(DATABASE_USERNAME));
         dataSource.setPassword(properties.getProperty(DATABASE_PASSWORD));
+/*        properties.load(DatabaseConfiguration.class.getResourceAsStream(API_URL_PROPERTY_FILE_PATH));
+        dataSource.setUrl(API_URL);*/
         return dataSource;
     }
 
