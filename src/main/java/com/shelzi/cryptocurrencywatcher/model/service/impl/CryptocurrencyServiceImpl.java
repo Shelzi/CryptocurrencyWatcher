@@ -3,21 +3,21 @@ package com.shelzi.cryptocurrencywatcher.model.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shelzi.cryptocurrencywatcher.exception.ServiceException;
 import com.shelzi.cryptocurrencywatcher.model.dao.CryptocurrencyDao;
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
 import com.shelzi.cryptocurrencywatcher.entity.User;
 import com.shelzi.cryptocurrencywatcher.model.service.CryptocurrencyService;
+import com.shelzi.cryptocurrencywatcher.util.JsonFormatter;
 import com.shelzi.cryptocurrencywatcher.util.PriceUsdConverter;
+import com.shelzi.cryptocurrencywatcher.web.RequestExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-//@PropertySource("classpath:apiUrl.properties")
 public class CryptocurrencyServiceImpl implements CryptocurrencyService {
     private final CryptocurrencyDao cryptocurrencyDao;
 
@@ -28,13 +28,19 @@ public class CryptocurrencyServiceImpl implements CryptocurrencyService {
 
     @Override
     public boolean create(User user) {
-        Cryptocurrency freshData = cryptocurrencyDao.read(user.getCurrencyIdFk());
-        return cryptocurrencyDao.create(user, freshData);
+        Optional<Cryptocurrency> optionalCryptocurrency = cryptocurrencyDao.read(user.getSavedCrypto().getId());
+        if (optionalCryptocurrency.isPresent()) {
+            return cryptocurrencyDao.create(user, optionalCryptocurrency.get());
+        } else {
+            throw new ServiceException(Thread.getAllStackTraces().toString());
+    }
+
     }
 
     @Override
     public Cryptocurrency read(long id) {
-        return cryptocurrencyDao.read(id);
+         Optional<Cryptocurrency> optionalCryptocurrency = cryptocurrencyDao.read(id);
+         return null;
     }
 
     @Override
@@ -53,19 +59,21 @@ public class CryptocurrencyServiceImpl implements CryptocurrencyService {
     }
 
     @Override
-    public Cryptocurrency readNewPriceFromApi(long id) throws JsonProcessingException {
-        RestTemplate restTemplate = new RestTemplate();
-        ObjectMapper mapper = new ObjectMapper();
-        ResponseEntity<String> s =
-                restTemplate.getForEntity("https://api.coinlore.net/api/ticker/?id=" + id, String.class);
-
-        String body = s.getBody().replaceAll("[\\[\\]]", "");
-        JsonNode rootNode = mapper.readValue(s.getBody(), JsonNode.class);
-        Cryptocurrency crypto = mapper.readValue(body, Cryptocurrency.class);
-        crypto.setPriceUsd(
-                PriceUsdConverter.UsdToPenny(
-                        rootNode.get(rootNode.size() - 1).get("price_usd").textValue()));
-        return crypto;
+    public Cryptocurrency readNewPrice(long id) throws JsonProcessingException {
+        RequestExecutor executor = new RequestExecutor();
+        Optional<String> response = Optional.ofNullable(executor.readNewPriceFromApi(id).getBody());
+        if (response.isPresent()) {
+            String body = JsonFormatter.formatJsonObject(response.get());
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readValue(body, JsonNode.class);
+            Cryptocurrency crypto = mapper.readValue(body, Cryptocurrency.class);
+            crypto.setPriceUsd(
+                    PriceUsdConverter.UsdToPenny(rootNode.get(rootNode.size() - 1).get("price_usd").textValue()));
+            return crypto;
+        } else {
+            // TODO: 21.07.2022 add custom exception
+            return new Cryptocurrency();
+        }
     }
 
     @Override

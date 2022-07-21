@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class CryptocurrencyDaoImpl implements CryptocurrencyDao {
@@ -25,9 +26,10 @@ public class CryptocurrencyDaoImpl implements CryptocurrencyDao {
         return jdbcTemplate.query(SQL, new CryptocurrencyMapper());
     }
 
-    public Cryptocurrency read(long id) {
+    @Override
+    public Optional<Cryptocurrency> read(long id) {
         String SQL = "SELECT * FROM cryptocurrency WHERE id = ?";
-        return jdbcTemplate.queryForObject(SQL, new CryptocurrencyMapper(), id);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL, new CryptocurrencyMapper(), id));
     }
 
     @Override

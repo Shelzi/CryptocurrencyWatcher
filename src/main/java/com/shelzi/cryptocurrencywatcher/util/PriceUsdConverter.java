@@ -6,7 +6,6 @@ public class PriceUsdConverter {
     }
 
     public static long UsdToPenny(String usd) {
-        return Long.parseLong(usd.substring(0, usd.indexOf("."))
-                + usd.substring(usd.indexOf(".") + 1));
+        return Long.parseLong(usd.substring(0, usd.indexOf(".")) + usd.substring(usd.indexOf(".") + 1));
     }
 }

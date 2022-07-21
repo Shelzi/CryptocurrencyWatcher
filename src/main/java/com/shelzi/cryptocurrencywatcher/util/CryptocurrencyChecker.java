@@ -16,10 +16,9 @@ import java.util.List;
 
 @Component
 public class CryptocurrencyChecker extends Thread {
-    private final String CRYPTOCURRENCY_BY_ID_API_URL = "https://api.coinlore.net/api/ticker/?id=";
+    private static final Logger logger = LogManager.getLogger();
     private final CryptocurrencyService cryptocurrencyService;
     private final UserService userService;
-    private static final Logger logger = LogManager.getLogger();
 
     private boolean isRequesting;
 
@@ -44,17 +43,17 @@ public class CryptocurrencyChecker extends Thread {
                                 .map(Cryptocurrency::getId)
                                 .toList();
                 for (long id : availableCryptocurrenciesId) {
-                    cryptocurrencyService.update(cryptocurrencyService.readNewPriceFromApi(id));
+                    cryptocurrencyService.update(cryptocurrencyService.readNewPrice(id));
                 }
 
                 List<User> users = userService.readAllUsers();
                 for (User user : users) {
-                    long userStartCryptoPrice = user.getWatchCrypto().getPriceUsd();
-                    long actualPrice = cryptocurrencyService.read(user.getCurrencyIdFk()).getPriceUsd();
+                    long userStartCryptoPrice = user.getSavedCrypto().getPriceUsd();
+                    long actualPrice = cryptocurrencyService.read(user.getSavedCrypto().getId()).getPriceUsd();
                     double result = (actualPrice - userStartCryptoPrice) / (double) userStartCryptoPrice * 100;
                     if (result > 1) {
                         logger.log(Level.WARN, "Price changed. Crypto ID: "
-                                + user.getWatchCrypto().getId()
+                                + user.getSavedCrypto().getId()
                                 + " Name: "
                                 + user.getName()
                                 + " Changed by: "

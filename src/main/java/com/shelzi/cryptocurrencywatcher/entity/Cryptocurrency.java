@@ -1,6 +1,9 @@
 package com.shelzi.cryptocurrencywatcher.entity;
 
 import com.fasterxml.jackson.annotation.*;
+import com.shelzi.cryptocurrencywatcher.util.PriceUsdConverter;
+
+import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Cryptocurrency {
@@ -17,23 +20,8 @@ public class Cryptocurrency {
         this.priceUsd = priceUsd;
     }
 
-    public Cryptocurrency(long id, String symbol) {
-        this.id = id;
-        this.symbol = symbol;
-    }
-
-    public Cryptocurrency(long id, String symbol, long priceUsd) {
-        this.id = id;
-        this.symbol = symbol;
-        this.priceUsd = priceUsd;
-    }
-
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public long getPriceUsd() {
@@ -50,5 +38,57 @@ public class Cryptocurrency {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
+    }
+
+    public static class Builder {
+        private Cryptocurrency cryptocurrency;
+
+        public Builder() {
+            cryptocurrency = new Cryptocurrency();
+        }
+
+        public Builder withId(long id){
+            cryptocurrency.id = id;
+            return this;
+        }
+
+        public Builder withSymbol(String symbol){
+            cryptocurrency.symbol= symbol;
+            return this;
+        }
+
+        public Builder withPriceUsd(long priceUsd){
+            cryptocurrency.priceUsd = priceUsd;
+            return this;
+        }
+
+        public Cryptocurrency build(){
+            return cryptocurrency;
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return "Cryptocurrency{" +
+                "id=" + id +
+                ", symbol='" + symbol + '\'' +
+                ", priceUsd='" + PriceUsdConverter.pennyToUsd(priceUsd) + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cryptocurrency cryptocurrency = (Cryptocurrency) o;
+        return id == cryptocurrency.id
+                && Objects.equals(symbol, cryptocurrency.symbol)
+                && priceUsd == cryptocurrency.priceUsd;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, symbol, priceUsd);
     }
 }

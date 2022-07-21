@@ -9,10 +9,10 @@ import java.sql.SQLException;
 public class CryptocurrencyMapper implements RowMapper<Cryptocurrency> {
     @Override
     public Cryptocurrency mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Cryptocurrency cryptocurrency = new Cryptocurrency();
-        cryptocurrency.setId(rs.getLong("id"));
-        cryptocurrency.setSymbol(rs.getString("symbol"));
-        cryptocurrency.setPriceUsd(rs.getLong("price_usd"));
-        return cryptocurrency;
+        return new Cryptocurrency.Builder()
+                .withId(rs.getLong("id"))
+                .withSymbol(rs.getString("symbol"))
+                .withPriceUsd(rs.getLong("price_usd"))
+                .build();
     }
 }
