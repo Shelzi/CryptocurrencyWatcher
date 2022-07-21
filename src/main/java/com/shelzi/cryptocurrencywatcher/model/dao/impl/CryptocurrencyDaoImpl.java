@@ -16,9 +16,9 @@ public class CryptocurrencyDaoImpl implements CryptocurrencyDao {
     private final JdbcTemplate jdbcTemplate;
 
     private static final String SELECT_ALL_FROM_CRYPTOCURRENCY = "SELECT * FROM cryptocurrency";
-    private static final String SELECT_ALL_FROM_CRYPTOCURRENCY_WITH_ID = "SELECT * FROM cryptocurrency";
+    private static final String SELECT_ALL_FROM_CRYPTOCURRENCY_WITH_ID = "SELECT * FROM cryptocurrency WHERE crypto_id=?";
     private static final String INSERT_INTO_USER_NAME_PRICE_CURRENCY = "INSERT INTO user (name, start_curency_price, currency_id_fk) values (?,?,?)";
-    private static final String UPDATE_CURRENCY_PRICE = "UPDATE cryptocurrency SET price_usd = ? where id = ?";
+    private static final String UPDATE_CURRENCY_PRICE = "UPDATE cryptocurrency SET price_usd = ? where crypto_id = ?";
 
     @Autowired
     public CryptocurrencyDaoImpl(JdbcTemplate jdbcTemplate) {

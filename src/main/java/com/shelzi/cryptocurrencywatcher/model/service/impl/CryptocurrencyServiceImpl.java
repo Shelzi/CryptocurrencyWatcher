@@ -67,8 +67,10 @@ public class CryptocurrencyServiceImpl implements CryptocurrencyService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readValue(body, JsonNode.class);
             Cryptocurrency crypto = mapper.readValue(body, Cryptocurrency.class);
+            /*crypto.setPriceUsd(
+                    PriceUsdConverter.UsdToPenny(rootNode.get(rootNode.size() - 1).get(JSON_PRICE_USD).textValue()));*/
             crypto.setPriceUsd(
-                    PriceUsdConverter.UsdToPenny(rootNode.get(rootNode.size() - 1).get(JSON_PRICE_USD).textValue()));
+                    PriceUsdConverter.UsdToPenny(rootNode.get(JSON_PRICE_USD).textValue()));
             return crypto;
         } else {
             throw new ServiceException();

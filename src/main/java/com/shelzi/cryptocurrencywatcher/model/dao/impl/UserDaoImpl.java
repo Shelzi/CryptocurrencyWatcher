@@ -13,7 +13,7 @@ import java.util.List;
 public class UserDaoImpl implements UserDao {
     private final JdbcTemplate jdbcTemplate;
 
-    private static final String SELECT_ALL_FROM_USER = "SELECT * FROM user";
+    private static final String SELECT_ALL_FROM_USER = "SELECT * FROM user JOIN cryptocurrency ON currency_id_fk = crypto_id";
 
     @Autowired
     public UserDaoImpl(JdbcTemplate jdbcTemplate) {
@@ -22,6 +22,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> readAllUsers() {
-        return jdbcTemplate.query(SELECT_ALL_FROM_USER, new UserMapper());
+        List<User> list = jdbcTemplate.query(SELECT_ALL_FROM_USER, new UserMapper());
+        return list;
     }
 }

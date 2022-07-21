@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CryptocurrencyMapper implements RowMapper<Cryptocurrency> {
-    private static final String SQL_COLUMN_USER_ID = "id";
+    private static final String SQL_COLUMN_USER_ID = "crypto_id";
     private static final String SQL_COLUMN_USER_SYMBOL = "symbol";
     private static final String SQL_COLUMN_USER_PRICE_USD = "price_usd";
 

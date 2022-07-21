@@ -1,7 +1,6 @@
 package com.shelzi.cryptocurrencywatcher.model.service.impl;
 
 import com.shelzi.cryptocurrencywatcher.entity.User;
-import com.shelzi.cryptocurrencywatcher.model.dao.CryptocurrencyDao;
 import com.shelzi.cryptocurrencywatcher.model.dao.UserDao;
 import com.shelzi.cryptocurrencywatcher.model.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
