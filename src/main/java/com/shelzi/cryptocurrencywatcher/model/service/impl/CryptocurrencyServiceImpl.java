@@ -21,6 +21,8 @@ import java.util.Optional;
 public class CryptocurrencyServiceImpl implements CryptocurrencyService {
     private final CryptocurrencyDao cryptocurrencyDao;
 
+    public static final String JSON_PRICE_USD = "price_usd";
+
     @Autowired
     public CryptocurrencyServiceImpl(CryptocurrencyDao cryptocurrencyDao) {
         this.cryptocurrencyDao = cryptocurrencyDao;
@@ -32,25 +34,23 @@ public class CryptocurrencyServiceImpl implements CryptocurrencyService {
         if (optionalCryptocurrency.isPresent()) {
             return cryptocurrencyDao.create(user, optionalCryptocurrency.get());
         } else {
-            throw new ServiceException(Thread.getAllStackTraces().toString());
-    }
-
+            throw new ServiceException();
+        }
     }
 
     @Override
     public Cryptocurrency read(long id) {
-         Optional<Cryptocurrency> optionalCryptocurrency = cryptocurrencyDao.read(id);
-         return null;
+        Optional<Cryptocurrency> optionalCryptocurrency = cryptocurrencyDao.read(id);
+        if (optionalCryptocurrency.isPresent()) {
+            return optionalCryptocurrency.get();
+        } else {
+            throw new ServiceException();
+        }
     }
 
     @Override
     public boolean update(Cryptocurrency cryptoCurrency) {
         return cryptocurrencyDao.update(cryptoCurrency);
-    }
-
-    @Override
-    public boolean delete(long id) {
-        return false;
     }
 
     @Override
@@ -68,16 +68,10 @@ public class CryptocurrencyServiceImpl implements CryptocurrencyService {
             JsonNode rootNode = mapper.readValue(body, JsonNode.class);
             Cryptocurrency crypto = mapper.readValue(body, Cryptocurrency.class);
             crypto.setPriceUsd(
-                    PriceUsdConverter.UsdToPenny(rootNode.get(rootNode.size() - 1).get("price_usd").textValue()));
+                    PriceUsdConverter.UsdToPenny(rootNode.get(rootNode.size() - 1).get(JSON_PRICE_USD).textValue()));
             return crypto;
         } else {
-            // TODO: 21.07.2022 add custom exception
-            return new Cryptocurrency();
+            throw new ServiceException();
         }
-    }
-
-    @Override
-    public void checkDifferenceInPrices() {
-
     }
 }

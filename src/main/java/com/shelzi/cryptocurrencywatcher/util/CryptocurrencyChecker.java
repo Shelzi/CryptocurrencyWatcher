@@ -19,7 +19,7 @@ public class CryptocurrencyChecker extends Thread {
     private static final Logger logger = LogManager.getLogger();
     private final CryptocurrencyService cryptocurrencyService;
     private final UserService userService;
-
+    private static final int ONE_MINUTE = 60000;
     private boolean isRequesting;
 
     public void setRequesting(boolean requesting) {
@@ -48,23 +48,12 @@ public class CryptocurrencyChecker extends Thread {
 
                 List<User> users = userService.readAllUsers();
                 for (User user : users) {
-                    long userStartCryptoPrice = user.getSavedCrypto().getPriceUsd();
-                    long actualPrice = cryptocurrencyService.read(user.getSavedCrypto().getId()).getPriceUsd();
-                    double result = (actualPrice - userStartCryptoPrice) / (double) userStartCryptoPrice * 100;
-                    if (result > 1) {
-                        logger.log(Level.WARN, "Price changed. Crypto ID: "
-                                + user.getSavedCrypto().getId()
-                                + " Name: "
-                                + user.getName()
-                                + " Changed by: "
-                                + result + "%");
-                    }
-                    System.out.println(result);
+                    checkPriceDifference(user);
                 }
-                sleep(60000);
+                sleep(ONE_MINUTE);
             }
         } catch (InterruptedException | JsonProcessingException e) {
-            e.printStackTrace();
+            logger.log(Level.ERROR, "Exception: " + e.getMessage());
         }
     }
 
@@ -73,5 +62,24 @@ public class CryptocurrencyChecker extends Thread {
         setDaemon(true);
         setRequesting(true);
         start();
+    }
+
+    private void checkPriceDifference(User user) {
+        try {
+            long userStartCryptoPrice = user.getSavedCrypto().getPriceUsd();
+            long actualPrice;
+            actualPrice = cryptocurrencyService.read(user.getSavedCrypto().getId()).getPriceUsd();
+            double priceDifferenceResult = (actualPrice - userStartCryptoPrice) / (double) userStartCryptoPrice * 100;
+            if (priceDifferenceResult > 1) {
+                logger.log(Level.WARN, "Price changed. Crypto ID: "
+                        + user.getSavedCrypto().getId()
+                        + " Name: "
+                        + user.getName()
+                        + " Changed by: "
+                        + priceDifferenceResult + "%");
+            }
+        } catch (JsonProcessingException e) {
+            logger.log(Level.ERROR, "Exception: " + e.getMessage());
+        }
     }
 }

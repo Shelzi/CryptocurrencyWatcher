@@ -15,6 +15,11 @@ import java.util.Optional;
 public class CryptocurrencyDaoImpl implements CryptocurrencyDao {
     private final JdbcTemplate jdbcTemplate;
 
+    private static final String SELECT_ALL_FROM_CRYPTOCURRENCY = "SELECT * FROM cryptocurrency";
+    private static final String SELECT_ALL_FROM_CRYPTOCURRENCY_WITH_ID = "SELECT * FROM cryptocurrency";
+    private static final String INSERT_INTO_USER_NAME_PRICE_CURRENCY = "INSERT INTO user (name, start_curency_price, currency_id_fk) values (?,?,?)";
+    private static final String UPDATE_CURRENCY_PRICE = "UPDATE cryptocurrency SET price_usd = ? where id = ?";
+
     @Autowired
     public CryptocurrencyDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -22,25 +27,24 @@ public class CryptocurrencyDaoImpl implements CryptocurrencyDao {
 
     @Override
     public List<Cryptocurrency> readAll() {
-        String SQL = "SELECT * FROM cryptocurrency";
-        return jdbcTemplate.query(SQL, new CryptocurrencyMapper());
+        return jdbcTemplate.query(SELECT_ALL_FROM_CRYPTOCURRENCY, new CryptocurrencyMapper());
     }
 
     @Override
     public Optional<Cryptocurrency> read(long id) {
-        String SQL = "SELECT * FROM cryptocurrency WHERE id = ?";
-        return Optional.ofNullable(jdbcTemplate.queryForObject(SQL, new CryptocurrencyMapper(), id));
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(SELECT_ALL_FROM_CRYPTOCURRENCY_WITH_ID, new CryptocurrencyMapper(), id));
     }
 
     @Override
     public boolean create(User user, Cryptocurrency cryptocurrency) {
-        String SQL = "INSERT INTO user (name, start_curency_price, currency_id_fk) values (?,?,?)";
-        return (jdbcTemplate.update(SQL, user.getName(), cryptocurrency.getPriceUsd(), cryptocurrency.getId()) == 1);
+        return (jdbcTemplate.update(INSERT_INTO_USER_NAME_PRICE_CURRENCY,
+                user.getName(), cryptocurrency.getPriceUsd(), cryptocurrency.getId()) == 1);
     }
 
     @Override
     public boolean update(Cryptocurrency cryptocurrency) {
-        String SQL = "UPDATE cryptocurrency SET price_usd = ? where id = ?";
-        return (jdbcTemplate.update(SQL, cryptocurrency.getPriceUsd(), cryptocurrency.getId()) == 1);
+        return (jdbcTemplate.update(UPDATE_CURRENCY_PRICE,
+                cryptocurrency.getPriceUsd(), cryptocurrency.getId()) == 1);
     }
 }

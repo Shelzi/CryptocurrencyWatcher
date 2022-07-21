@@ -11,6 +11,10 @@ public class ServiceException extends RuntimeException {
         super(message);
     }
 
+    public ServiceException() {
+
+    }
+
     public String getDetail() {
         return detail;
     }

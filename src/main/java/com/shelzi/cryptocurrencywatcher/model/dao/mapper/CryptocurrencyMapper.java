@@ -7,12 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CryptocurrencyMapper implements RowMapper<Cryptocurrency> {
+    private static final String SQL_COLUMN_USER_ID = "id";
+    private static final String SQL_COLUMN_USER_SYMBOL = "symbol";
+    private static final String SQL_COLUMN_USER_PRICE_USD = "price_usd";
+
     @Override
     public Cryptocurrency mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Cryptocurrency.Builder()
-                .withId(rs.getLong("id"))
-                .withSymbol(rs.getString("symbol"))
-                .withPriceUsd(rs.getLong("price_usd"))
+                .withId(rs.getLong(SQL_COLUMN_USER_ID))
+                .withSymbol(rs.getString(SQL_COLUMN_USER_SYMBOL))
+                .withPriceUsd(rs.getLong(SQL_COLUMN_USER_PRICE_USD))
                 .build();
     }
 }

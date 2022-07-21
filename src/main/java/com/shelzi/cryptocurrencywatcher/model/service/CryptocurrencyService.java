@@ -13,11 +13,7 @@ public interface CryptocurrencyService {
 
     boolean update(Cryptocurrency cryptoCurrency);
 
-    boolean delete(long id);
-
     List<Cryptocurrency> readAllAvailableCryptocurrencies();
 
     Cryptocurrency readNewPrice(long id) throws JsonProcessingException;
-
-    void checkDifferenceInPrices();
 }
