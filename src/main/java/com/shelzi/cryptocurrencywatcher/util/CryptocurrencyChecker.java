@@ -2,19 +2,25 @@ package com.shelzi.cryptocurrencywatcher.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shelzi.cryptocurrencywatcher.entity.Cryptocurrency;
+import com.shelzi.cryptocurrencywatcher.entity.User;
 import com.shelzi.cryptocurrencywatcher.model.service.CryptocurrencyService;
+import com.shelzi.cryptocurrencywatcher.model.service.UserService;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class CryptocurrencyChecker extends Thread {
     private final String CRYPTOCURRENCY_BY_ID_API_URL = "https://api.coinlore.net/api/ticker/?id=";
     private final CryptocurrencyService cryptocurrencyService;
+    private final UserService userService;
+    private static final Logger logger = LogManager.getLogger();
+
     private boolean isRequesting;
 
     public void setRequesting(boolean requesting) {
@@ -22,8 +28,10 @@ public class CryptocurrencyChecker extends Thread {
     }
 
     @Autowired
-    public CryptocurrencyChecker(CryptocurrencyService cryptocurrencyService) {
+    public CryptocurrencyChecker(CryptocurrencyService cryptocurrencyService, UserService userService) {
         this.cryptocurrencyService = cryptocurrencyService;
+        this.userService = userService;
+
     }
 
     @Override
@@ -37,6 +45,22 @@ public class CryptocurrencyChecker extends Thread {
                                 .toList();
                 for (long id : availableCryptocurrenciesId) {
                     cryptocurrencyService.update(cryptocurrencyService.readNewPriceFromApi(id));
+                }
+
+                List<User> users = userService.readAllUsers();
+                for (User user : users) {
+                    long userStartCryptoPrice = user.getWatchCrypto().getPriceUsd();
+                    long actualPrice = cryptocurrencyService.read(user.getCurrencyIdFk()).getPriceUsd();
+                    double result = (actualPrice - userStartCryptoPrice) / (double) userStartCryptoPrice * 100;
+                    if (result > 1) {
+                        logger.log(Level.WARN, "Price changed. Crypto ID: "
+                                + user.getWatchCrypto().getId()
+                                + " Name: "
+                                + user.getName()
+                                + " Changed by: "
+                                + result + "%");
+                    }
+                    System.out.println(result);
                 }
                 sleep(60000);
             }

@@ -18,4 +18,6 @@ public interface CryptocurrencyService {
     List<Cryptocurrency> readAllAvailableCryptocurrencies();
 
     Cryptocurrency readNewPriceFromApi(long id) throws JsonProcessingException;
+
+    void checkDifferenceInPrices();
 }

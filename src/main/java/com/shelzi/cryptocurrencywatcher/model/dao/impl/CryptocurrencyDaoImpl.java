@@ -22,14 +22,12 @@ public class CryptocurrencyDaoImpl implements CryptocurrencyDao {
     @Override
     public List<Cryptocurrency> readAll() {
         String SQL = "SELECT * FROM cryptocurrency";
-        List<Cryptocurrency> cryptocurrencies = jdbcTemplate.query(SQL, new CryptocurrencyMapper());
-        return cryptocurrencies;
+        return jdbcTemplate.query(SQL, new CryptocurrencyMapper());
     }
 
     public Cryptocurrency read(long id) {
         String SQL = "SELECT * FROM cryptocurrency WHERE id = ?";
-        Cryptocurrency cryptocurrencies = jdbcTemplate.queryForObject(SQL, new CryptocurrencyMapper(), id);
-        return cryptocurrencies;
+        return jdbcTemplate.queryForObject(SQL, new CryptocurrencyMapper(), id);
     }
 
     @Override

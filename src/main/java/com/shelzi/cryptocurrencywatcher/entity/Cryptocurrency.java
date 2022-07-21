@@ -13,10 +13,15 @@ public class Cryptocurrency {
     public Cryptocurrency() {
     }
 
+    public Cryptocurrency(long priceUsd) {
+        this.priceUsd = priceUsd;
+    }
+
     public Cryptocurrency(long id, String symbol) {
         this.id = id;
         this.symbol = symbol;
     }
+
     public Cryptocurrency(long id, String symbol, long priceUsd) {
         this.id = id;
         this.symbol = symbol;

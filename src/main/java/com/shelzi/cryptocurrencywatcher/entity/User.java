@@ -8,7 +8,12 @@ public class User {
     private long id;
     private String name;
     @JsonProperty("track_id")
-    private long trackId;
+    private long currencyIdFk;
+    private final Cryptocurrency watchCrypto;
+
+    public User(Cryptocurrency watchCrypto) {
+        this.watchCrypto = watchCrypto;
+    }
 
     public String getName() {
         return name;
@@ -26,11 +31,15 @@ public class User {
         this.id = id;
     }
 
-    public long getTrackId() {
-        return trackId;
+    public long getCurrencyIdFk() {
+        return currencyIdFk;
     }
 
-    public void setTrackId(long trackId) {
-        this.trackId = trackId;
+    public void setCurrencyIdFk(long currencyIdFk) {
+        this.currencyIdFk = currencyIdFk;
+    }
+
+    public Cryptocurrency getWatchCrypto() {
+        return watchCrypto;
     }
 }
